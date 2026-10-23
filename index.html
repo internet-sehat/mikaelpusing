@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Kunci Layar</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:#000;overflow:hidden;-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,sans-serif;color:#fff;display:flex;justify-content:center;overflow:hidden;user-select:none;-webkit-user-select:none;position:fixed;inset:0;width:100%}
+.phone{position:relative;width:100%;max-width:430px;height:100%;overflow:hidden;background:#222;background-size:cover;background-position:center}
+@media (min-width:500px) and (min-height:600px){body{align-items:center;background:#111}.phone{height:min(868px,96vh);width:calc(min(868px,96vh)*409/868);max-width:none;border-radius:46px;border:8px solid #000;box-shadow:0 0 0 2px #333}}
+.shade{position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.28),rgba(0,0,0,0) 35%,rgba(0,0,0,0) 60%,rgba(0,0,0,.35))}
+.ui{position:absolute;inset:0;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.status{display:flex;justify-content:space-between;align-items:center;padding:14px 28px 0;font-size:15px;font-weight:600;height:48px}
+.status .r{display:flex;gap:6px;align-items:center}
+.lockic{text-align:center;margin-top:6px;height:22px}
+.date{text-align:center;font-size:19px;font-weight:500;opacity:.92;margin-top:2px}
+.clock{text-align:center;font-size:clamp(70px,21vw,92px);font-weight:600;line-height:1.02;letter-spacing:-1px;margin-top:-2px;text-shadow:0 1px 12px rgba(0,0,0,.15)}
+.spacer{flex:1}
+.notifs{padding:0 10px;margin-bottom:18px;min-height:90px}
+.notif{display:flex;gap:11px;align-items:flex-start;background:rgba(60,60,67,.55);-webkit-backdrop-filter:blur(26px) saturate(1.6);backdrop-filter:blur(26px) saturate(1.6);border-radius:22px;padding:12px 14px;cursor:pointer;transform:translateY(-30px) scale(.96);opacity:0;transition:transform .45s cubic-bezier(.2,.9,.3,1.2),opacity .3s}
+.notif.show{transform:none;opacity:1}
+.notif:active{transform:scale(.97);filter:brightness(.9)}
+.pic{position:relative;width:42px;height:42px;flex:none}
+.pic .face{width:42px;height:42px;border-radius:50%;background:linear-gradient(#a5aab5,#7b808c);background-size:cover;background-position:center;display:grid;place-items:center;font-size:19px;font-weight:600}
+.pic .badge{position:absolute;right:-5px;bottom:-5px;width:20px;height:20px;border-radius:6px;background:linear-gradient(#5bf675,#0cbd2a);display:grid;place-items:center;border:0.3px solid rgba(0,0,0,.25)}
+.txt{flex:1;min-width:0}
+.top{display:flex;justify-content:space-between;gap:8px;font-size:15px}
+.top b{font-weight:600}
+.top span{font-size:13px;opacity:.65;flex:none}
+.body{font-size:15px;line-height:1.28;opacity:.95;margin-top:1px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
+.bottom{display:flex;justify-content:space-between;padding:0 44px 18px}
+.rb{width:50px;height:50px;border-radius:50%;background:rgba(40,40,44,.55);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);display:grid;place-items:center}
+.home{width:136px;height:5px;border-radius:3px;background:#fff;opacity:.9;margin:0 auto 8px}
+.hint{text-align:center;font-size:12px;opacity:.7;margin-bottom:12px}
+@media (max-height:640px){.clock{font-size:72px}.notifs{margin-bottom:8px}}
+</style>
+</head>
+<body>
+<div class="phone" id="phone">
+  <div class="shade"></div>
+  <div class="ui">
+    <div class="status">
+      <span id="stime"></span>
+      <span class="r">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="#fff"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+        <svg width="17" height="12" viewBox="0 0 17 12" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M1.5 4.2a10 10 0 0 1 14 0M4 7a6.4 6.4 0 0 1 9 0"/><circle cx="8.5" cy="10" r="1" fill="#fff" stroke="none"/></svg>
+        <svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x=".5" y=".5" width="22" height="12" rx="3.5" stroke="#fff" opacity=".5"/><rect x="2" y="2" width="19" height="9" rx="2.2" fill="#fff"/><rect x="24" y="4.2" width="2" height="4.6" rx="1" fill="#fff" opacity=".5"/></svg>
+      </span>
+    </div>
+    <div class="lockic">
+      <svg width="16" height="22" viewBox="0 0 16 22" fill="#fff"><path d="M8 0a4.8 4.8 0 0 0-4.8 4.8V8H2.4A2.4 2.4 0 0 0 0 10.4v9.2A2.4 2.4 0 0 0 2.4 22h11.2a2.4 2.4 0 0 0 2.4-2.4v-9.2A2.4 2.4 0 0 0 13.6 8h-.8V4.8A4.8 4.8 0 0 0 8 0Zm-3 8V4.8a3 3 0 0 1 6 0V8Z"/></svg>
+    </div>
+    <div class="date" id="date"></div>
+    <div class="clock" id="clock"></div>
+    <div class="spacer"></div>
+    <div class="notifs" id="notifs"></div>
+    <div class="bottom">
+      <div class="rb"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 2h8v3l-1.5 2.5V10h-5V7.5L8 5Zm1.5 9h5v11h-5Z"/></svg></div>
+      <div class="rb"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 8a2 2 0 0 1 2-2h2l1.5-2h7L17 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><circle cx="12" cy="13" r="3.8"/></svg></div>
+    </div>
+    <div class="home"></div>
+  </div>
+</div>
+
+<script>
+/* ==========================================================
+   PENGATURAN — ubah di bagian ini saja
+   ========================================================== */
+
+// Wallpaper layar kunci. Isi nama file (satu folder dengan lock.html),
+// link gambar, atau kosongkan ("") untuk pakai gradasi bawaan.
+const WALLPAPER = "kudfun.jpg";
+
+// Foto profil di notifikasi. Sama aturannya dengan wallpaper.
+// Kosongkan ("") untuk pakai huruf pertama nama.
+const NOTIF_PHOTO = "";
+
+// Nama pengirim & isi notifikasi
+const SENDER = "Mikael";
+const NOTIF_TEXT = "ACE TOLONG!";
+const NOTIF_TIME = "Now";
+
+// Halaman yang dibuka saat notifikasi diketuk (file chat kamu)
+const CHAT_URL = "chat.html";
+
+// Jam notifikasi muncul setelah halaman dibuka (milidetik)
+const NOTIF_DELAY = 1200;
+
+// Jam di layar kunci. Kosongkan ("") untuk pakai jam asli perangkat,
+// atau isi tetap, contoh: "19.02"
+const FAKE_TIME = "";
+
+/* ==========================================================
+   KODE — biasanya tidak perlu diubah
+   ========================================================== */
+const $=id=>document.getElementById(id);
+const hari=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const bulan=["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+if(WALLPAPER){$("phone").style.backgroundImage=`url("${WALLPAPER}")`}
+else{$("phone").style.background="linear-gradient(160deg,#3a2c6e 0%,#7a3b8f 40%,#e0668a 75%,#f6a46b 100%)"}
+
+function tick(){
+  const d=new Date();
+  const t=FAKE_TIME||(String(d.getHours()).padStart(2,"0")+"."+String(d.getMinutes()).padStart(2,"0"));
+  $("clock").textContent=t;$("stime").textContent=t;
+  $("date").textContent=`${hari[d.getDay()]}, ${d.getDate()} ${bulan[d.getMonth()]}`;
+}
+tick();setInterval(tick,10000);
+
+const n=document.createElement("div");
+n.className="notif";
+n.innerHTML=`
+  <div class="pic">
+    <div class="face" id="face"></div>
+    <div class="badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M12 3C6.5 3 2 6.6 2 11c0 2.5 1.4 4.7 3.7 6.2-.2 1.2-.8 2.4-1.7 3.4 1.8-.1 3.4-.8 4.6-1.7.9.2 1.9.3 3.4.3 5.5 0 10-3.6 10-8.2S17.500 3 12 3Z"/></svg></div>
+  </div>
+  <div class="txt">
+    <div class="top"><b></b><span></span></div>
+    <div class="body"></div>
+  </div>`;
+n.querySelector("b").textContent=SENDER;
+n.querySelector(".top span").textContent=NOTIF_TIME;
+n.querySelector(".body").textContent=NOTIF_TEXT;
+const face=n.querySelector("#face");
+if(NOTIF_PHOTO){face.style.backgroundImage=`url("${NOTIF_PHOTO}")`}else{face.textContent=SENDER[0].toUpperCase()}
+n.addEventListener("click",()=>{setTimeout(()=>{location.href=CHAT_URL},160)});
+$("notifs").appendChild(n);
+
+setTimeout(()=>{
+  n.classList.add("show");
+  try{navigator.vibrate&&navigator.vibrate([60,40,60])}catch(e){}
+},NOTIF_DELAY);
+</script>
+</body>
+</html>

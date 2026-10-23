@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pesan</title>
+<style>
+:root{--bg:#fff;--bar:rgba(248,248,250,.94);--text:#000;--muted:#8a8a8e;--in:#e9e9eb;--out:#0a84ff;--border:#d8d8dc;--field:#fff;box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--bar:rgba(28,28,30,.94);--text:#fff;--in:#262629;--border:#38383a;--field:#000}}
+:root[data-theme="dark"]{--bg:#000;--bar:rgba(28,28,30,.94);--text:#fff;--in:#262629;--border:#38383a;--field:#000}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden;-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);display:flex;justify-content:center;position:fixed;inset:0;width:100%}
+.app{position:relative;width:100%;max-width:430px;height:100%;display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
+@media (min-width:500px) and (min-height:600px){body{align-items:center;background:#111}.app{flex:none;height:868px;width:409px;max-width:none;transform:scale(var(--s,1));padding-top:0;border-radius:46px;border:8px solid #000;box-shadow:0 0 0 2px #333}}
+header{background:var(--bar);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:8px 12px;position:relative;min-height:62px}
+.back{color:var(--out);font-size:30px;line-height:1;width:40px}
+.who{position:absolute;left:0;right:0;text-align:center;pointer-events:none}
+.av{width:38px;height:38px;border-radius:50%;background:linear-gradient(#a5aab5,#7b808c);color:#fff;font-weight:600;display:grid;place-items:center;margin:0 auto;overflow:hidden;background-size:cover;background-position:center}
+.nm{font-size:11px;margin-top:2px}
+#msgs{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:14px 12px;display:flex;flex-direction:column;gap:3px}
+.time{align-self:center;color:var(--muted);font-size:11px;margin:6px 0 8px}
+
+.b {
+  max-width: 78%;
+  padding: 8px 12px;
+  border-radius: 18px;
+  font-size: 16px;
+  line-height: 1.3;
+  animation: pop .18s ease-out;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  position: relative;
+}
+
+
+.b a {
+  color: inherit;
+  text-decoration: underline;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:none;opacity:1}}
+.b.in{align-self:flex-start;background:var(--in);border-bottom-left-radius:5px}
+.b.out{align-self:flex-end;background:var(--out);color:#fff;border-bottom-right-radius:5px}
+
+/* Bubble berurutan: pesan masuk */
+.b.in + .b.in {
+  border-top-left-radius: 5px;
+}
+
+.b.in + .b.in:last-child {
+  border-bottom-left-radius: 18px;
+}
+
+/* Bubble berurutan: pesan keluar */
+.b.out + .b.out {
+  border-top-right-radius: 5px;
+}
+
+/* Bentuk bubble pesan terakhir dalam kelompok */
+.b.in:not(:has(+ .b.in)) {
+  border-bottom-left-radius: 5px;
+}
+
+.b.out:not(:has(+ .b.out)) {
+  border-bottom-right-radius: 5px;
+}
+
+.status{align-self:flex-end;font-size:11px;color:var(--muted);margin:1px 4px 4px}
+.typing{align-self:flex-start;background:var(--in);border-radius:19px;padding:12px 14px;display:flex;gap:4px}
+.typing i{width:7px;height:7px;border-radius:50%;background:#9a9a9f;animation:bl 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+@keyframes bl{0%,60%,100%{opacity:.35}30%{opacity:1}}
+footer{background:var(--bar);border-top:1px solid var(--border);padding:8px 10px 0;display:flex;gap:8px;align-items:center}
+.plus{width:32px;height:32px;border-radius:50%;background:var(--in);color:var(--muted);display:grid;place-items:center;font-size:22px;flex:none}
+.field{flex:1;display:flex;align-items:center;border:1px solid var(--border);background:var(--field);border-radius:19px;padding:4px 4px 4px 14px;min-height:36px}
+#inp{flex:1;border:0;outline:0;background:none;font:inherit;font-size:16px;color:var(--text);min-width:0}
+#inp::placeholder{color:var(--muted)}
+#send{width:28px;height:28px;border-radius:50%;border:0;background:var(--out);color:#fff;display:grid;place-items:center;cursor:pointer;flex:none;padding:0}
+#send:disabled{opacity:0;pointer-events:none}
+.sb{flex:none;background:var(--bar);color:var(--text);display:flex;justify-content:space-between;align-items:center;height:calc(48px + env(safe-area-inset-top,0px));padding:calc(14px + env(safe-area-inset-top,0px)) 28px 0;font-size:15px;font-weight:600}
+.sb .r{display:flex;gap:6px;align-items:center}
+header{border-top:0}
+.hb{flex:none;background:var(--bar);padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px))}
+.hb i{display:block;width:136px;height:5px;border-radius:3px;background:var(--text);opacity:.9;margin:0 auto}
+.island{display:none;position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;border-radius:20px;background:#000;z-index:5;pointer-events:none}
+@media (min-width:500px) and (min-height:600px){.island{display:block}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sb">
+    <span id="stime"></span>
+    <span class="r">
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1.5 4.2a10 10 0 0 1 14 0M4 7a6.4 6.4 0 0 1 9 0"/><circle cx="8.5" cy="10" r="1" fill="currentColor" stroke="none"/></svg>
+      <svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x=".5" y=".5" width="22" height="12" rx="3.5" stroke="currentColor" opacity=".45"/><rect x="2" y="2" width="19" height="9" rx="2.2" fill="currentColor"/><rect x="24" y="4.2" width="2" height="4.6" rx="1" fill="currentColor" opacity=".45"/></svg>
+    </span>
+  </div>
+  <header>
+    <div class="back">‹</div>
+    <div class="who"><div class="av" id="av"></div><div class="nm" id="nm"></div></div>
+  </header>
+  <div id="msgs"></div>
+  <footer>
+    <div class="plus">+</div>
+    <div class="field">
+      <input id="inp" readonly placeholder="iMessage">
+      <button id="send" aria-label="Kirim">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 12V2M7 2L2.5 6.5M7 2l4.5 4.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </footer>
+  <div class="hb"><i></i></div>
+  <div class="island"></div>
+</div>
+
+<script>
+/* ==========================================================
+   PENGATURAN — ubah di bagian ini saja
+   ========================================================== */
+
+// Nama yang tampil di header
+const SENDER = "Mikael";
+
+// Foto profil. Isi salah satu:
+//  - nama file di folder yang sama dengan index.html, contoh: "foto.jpg"
+//  - link gambar, contoh: "https://situsmu.com/foto.jpg"
+//  - kosongkan ("") kalau mau pakai huruf pertama nama
+const PHOTO = "";
+
+// Jam yang tampil di atas obrolan
+const TIME_LABEL = "Today";
+
+// Jam di status bar. Kosongkan ("") untuk pakai jam asli perangkat,
+// atau isi tetap, contoh: "19.02"
+const FAKE_TIME = "";
+
+// Isi obrolan, satu pesan per baris:
+//   "<"  = pesan dari pengirim
+//   ">"  = balasan kamu (otomatis terisi di kolom, tinggal klik send)
+// Link (http/https) di dalam pesan otomatis bisa diklik.
+const SCRIPT = `
+< ACE TOLONG
+< Tiktok is everywhere, sirkus kita terancam! t___t
+> eeeeee trs hubungannya sama aku apa ya ka
+< KAU LEADER KOCAK
+< Bantu aku please 🥺
+> eeeee yaudah kalo gitu aku bantu deh..
+> bantu apa tapi 😂
+< Bantu bangun strategi memajukan UMKM kita!
+> oh kayaknya aku punya ide!
+< Ide apa tuh?
+> well.. opsi 1..
+> coba visit 
+> https://canva.link/y77zq9m69h6xfsb
+`;
+
+/* ==========================================================
+   KODE — biasanya tidak perlu diubah
+   ========================================================== */
+const $=id=>document.getElementById(id);
+const msgs=$("msgs"), inp=$("inp"), send=$("send");
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const opening=[], steps=[];
+let step=0, busy=false;
+
+SCRIPT.split("\n").forEach(l=>{
+  l=l.trim();if(!l)return;
+  const c=l[0],t=l.slice(1).trim();if(!t)return;
+  if(c==="<"){(steps.length?steps[steps.length-1].then:opening).push(t)}
+  else if(c===">"){steps.push({reply:t,then:[]})}
+});
+
+$("nm").textContent=SENDER+" ›";
+if(PHOTO){$("av").style.backgroundImage=`url("${PHOTO}")`}else{$("av").textContent=SENDER[0].toUpperCase()}
+msgs.innerHTML=`<div class="time">${TIME_LABEL}</div>`;
+function tick(){const d=new Date();$("stime").textContent=FAKE_TIME||(String(d.getHours()).padStart(2,"0")+"."+String(d.getMinutes()).padStart(2,"0"))}
+tick();setInterval(tick,10000);
+
+function scroll(){msgs.scrollTop=msgs.scrollHeight}
+
+const URL_ANY=/(https?:\/\/[^\s]+)/gi;
+
+function makeLink(url,cls){
+  const a=document.createElement("a");
+  a.href=url;a.target="_blank";a.rel="noopener noreferrer";
+  if(cls)a.className=cls;
+  return a;
+}
+
+function fillText(el,t){
+  t.split(URL_ANY).forEach((part,i)=>{
+    if(i%2===1){const a=makeLink(part);a.textContent=part;el.appendChild(a)}
+    else if(part){el.appendChild(document.createTextNode(part))}
+  });
+}
+
+function bubble(t,cls){
+  const d=document.createElement("div");
+  d.className="b "+cls;fillText(d,t);
+  msgs.appendChild(d);scroll();
+}
+async function incoming(list){
+  for(const t of list){
+    const ty=document.createElement("div");ty.className="typing";ty.innerHTML="<i></i><i></i><i></i>";
+    msgs.appendChild(ty);scroll();
+    await wait(1100);ty.remove();bubble(t,"in");await wait(300);
+  }
+}
+function loadNext(){
+  if(step<steps.length){inp.value=steps[step].reply;send.disabled=false}
+  else{inp.value="";send.disabled=true}
+}
+send.addEventListener("click",async()=>{
+  if(busy||step>=steps.length)return;
+  busy=true;send.disabled=true;
+  const s=steps[step];inp.value="";
+  bubble(s.reply,"out");
+  const st=document.createElement("div");st.className="status";st.textContent="Terkirim";msgs.appendChild(st);
+  await wait(700);st.textContent="Dibaca";
+  await wait(500);
+  await incoming(s.then);
+  st.remove();step++;busy=false;loadNext();
+});
+(async()=>{send.disabled=true;await wait(500);await incoming(opening);loadNext()})();
+</script>
+<script>
+/* Di desktop: ukuran layar tetap 393x852 (=1179x2556 @3x), bingkai diperkecil utuh jika jendela pendek */
+(function(){var el=document.querySelector('.app'),mq=matchMedia('(min-width:500px) and (min-height:600px)');function fit(){el.style.setProperty('--s',mq.matches?Math.min(1,innerHeight*.96/868):1)}fit();addEventListener('resize',fit)})();
+</script>
+</body>
+</html>
